@@ -6,7 +6,7 @@ variable "aws_secret_key" {
   description = "AWS secret access key"
 }
 
-variable "region"     { 
+variable "region" {
   description = "AWS region to host your network"
 }
 
@@ -23,6 +23,11 @@ variable "public_subnet_cidr" {
 variable "private_subnet_cidr" {
   description = "CIDR for private subnet"
   default     = "10.128.1.0/24"
+}
+
+variable "server_port" {
+  description = "port to open in security group"
+  default     = "9200"
 }
 
 /* ES AMIs for each region - according to - https://bitnami.com/stack/elasticsearch/cloud/aws */
