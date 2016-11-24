@@ -4,6 +4,7 @@
 This will launch an AWS ASG ElasticSearch cluster Inside a VPC with an ELB in front and also create a security group that allows traffic only through port
 
 This will create(using Terraform):
+
   1.An Autoscalling Group(ASG) with 3 nodes that have the elasticsearch aws image on them.
 
   2.A VPC to house the ASG.
