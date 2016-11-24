@@ -29,6 +29,7 @@ variable "private_subnet_cidr" {
 /* ES AMIs for each region - according to - https://bitnami.com/stack/elasticsearch/cloud/aws */
 variable "amis" {
   description = "Base AMI to launch the instances with"
+  type = "map"
   default = {
     us-west-1 = "ami-c2105aa2"
     us-east-1 = "ami-85346e92"
