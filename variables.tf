@@ -1,8 +1,8 @@
-variable "access_key" { 
+variable "aws_access_key" {
   description = "AWS access key"
 }
 
-variable "secret_key" { 
+variable "aws_secret_key" {
   description = "AWS secret access key"
 }
 
@@ -26,11 +26,18 @@ variable "private_subnet_cidr" {
   default     = "10.128.1.0/24"
 }
 
-/* Ubuntu 14.04 amis by region */
+/* ES AMIs for each region - according to - https://bitnami.com/stack/elasticsearch/cloud/aws */
 variable "amis" {
   description = "Base AMI to launch the instances with"
   default = {
-    us-west-1 = "ami-049d8641" 
-    us-east-1 = "ami-a6b8e7ce"
+    us-west-1 = "ami-c2105aa2"
+    us-east-1 = "ami-85346e92"
+    us-west-2 = "ami-2352f443"
+    eu-central-1 = "ami-29a95246"
+    ap-southeast-1 = "ami-4a0aab29"
+    ap-southeast-2 = "ami-1b427e78"
+    ap-northeast-1 = "ami-b83b99d9"
+    ap-northeast-2 = "ami-a039edce"
+    sa-east-1 = "ami-7a53cf16"
   }
 }
