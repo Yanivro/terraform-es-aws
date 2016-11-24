@@ -6,6 +6,6 @@ provider "aws" {
 }
 
 resource "aws_instance" "es-node" {
-  ami = "ami-2d39803a"
+  ami = "${lookup(var.amis, var.region)}"
   instance_type = "t2.micro"
 }
