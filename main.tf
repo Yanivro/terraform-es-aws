@@ -33,7 +33,7 @@ resource "aws_autoscaling_group" "es_asg_cluster" {
   max_size = 3
 }
 
-# Security group configuration with rule
+# Security group configuration with rule for the nodes.
 resource "aws_security_group" "es_security_group" {
   name = "es_security_group"
   vpc_id = "${aws_vpc.es_vpc.id}"
@@ -45,5 +45,28 @@ resource "aws_security_group" "es_security_group" {
   }
     lifecycle {
     create_before_destroy = true
+  }
+
+  # Configure security group for the ELB
+}
+resource "aws_security_group" "elb_security_group" {
+  name = "elb_security_group"
+  ingress {
+    from_port ="${var.server_port}"
+    to_port = "${var.server_port}"
+    protocol = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+# configure Elastic Load Balancer(ELB)
+resource "aws_elb" "es_elb" {
+  name = "es-elb"
+  security_groups = ["${aws_security_group.elb_security_group.id}"]
+  subnets = ["${aws_subnet.es_subnet.id}"]
+listener {
+    lb_port = "${var.server_port}"
+    lb_protocol = "http"
+    instance_port = "${var.server_port}"
+    instance_protocol = "http"
   }
 }
