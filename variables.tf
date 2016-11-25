@@ -8,6 +8,7 @@ variable "aws_secret_key" {
 
 variable "region" {
   description = "AWS region to host your network"
+  default     = "eu-central-1"
 }
 
 variable "vpc_cidr" {
