@@ -18,7 +18,7 @@ resource "aws_subnet" "es_subnet" {
 
 # Lauch configuration to be used by the AutoScalling group.
 resource "aws_launch_configuration" "es_asg_conf" {
-  image_id = "${var.amis}"
+  image_id = "${lookup(var.amis, var.region)}"
   instance_type = "t2.micro"
   security_groups = ["${aws_security_group.es_security_group.id}"]
   lifecycle {
