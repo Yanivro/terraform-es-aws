@@ -28,8 +28,7 @@ resource "aws_launch_configuration" "es_asg_conf" {
 # Lauching the ASG with configuration
 resource "aws_autoscaling_group" "es_asg_cluster" {
   launch_configuration = "${aws_launch_configuration.es_asg_conf.id}"
-  availability_zones = ["${data.aws_availability_zones.all.names}"]
-
+  vpc_zone_identifier = ["${aws_subnet.es_subnet.id}"]
   min_size = 3
   max_size = 3
 }
@@ -48,6 +47,3 @@ resource "aws_security_group" "es_security_group" {
     create_before_destroy = true
   }
 }
-
-# Get availablity zones for ASG
-data "aws_availability_zones" "all" {}
