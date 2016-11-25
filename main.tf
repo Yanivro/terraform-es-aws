@@ -11,7 +11,7 @@ resource "aws_instance" "es_node" {
   vpc_security_group_ids = ["${aws_security_group.es_security_group.id}"]
 
 }
-
+# Lauch configuration to be used by the AutoScalling group.
 resource "aws_launch_configuration" "es_asg_conf" {
   image_id = "ami-2d39803a"
   instance_type = "t2.micro"
@@ -20,7 +20,7 @@ resource "aws_launch_configuration" "es_asg_conf" {
     create_before_destroy = true
   }
 }
-
+# Lauching the ASG with configuration
 resource "aws_autoscaling_group" "es_asg_cluster" {
   launch_configuration = "${aws_launch_configuration.es_asg_conf.id}"
   availability_zones = ["${data.aws_availability_zones.all.names}"]
@@ -29,10 +29,12 @@ resource "aws_autoscaling_group" "es_asg_cluster" {
   max_size = 3
 }
 
+# VPC configuration
 resource "aws_vpc" "es_vpc" {
     cidr_block = "${var.vpc_cidr}"
     enable_dns_hostnames = true
 }
+# Security group configuration with rule
 resource "aws_security_group" "es_security_group" {
   name = "es_security_group"
   ingress {
@@ -47,4 +49,5 @@ resource "aws_security_group" "es_security_group" {
   }
 }
 
+# Get availablity zones for ASG
 data "aws_availability_zones" "all" {}
