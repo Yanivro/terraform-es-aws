@@ -4,16 +4,21 @@ provider "aws" {
   secret_key = "${var.aws_secret_key}"
   region = "${var.region}"
 }
-
-resource "aws_instance" "es_node" {
-  ami = "${lookup(var.amis, var.region)}"
-  instance_type = "t2.micro"
-  vpc_security_group_ids = ["${aws_security_group.es_security_group.id}"]
-
+# VPC configuration
+resource "aws_vpc" "es_vpc" {
+    cidr_block = "${var.vpc_cidr}"
+    enable_dns_hostnames = true
 }
+
+# Subnet configuration
+resource "aws_subnet" "es_subnet" {
+  vpc_id = "${aws_vpc.es_vpc.id}"
+  cidr_block = "${var.public_subnet_cidr}"
+}
+
 # Lauch configuration to be used by the AutoScalling group.
 resource "aws_launch_configuration" "es_asg_conf" {
-  image_id = "ami-2d39803a"
+  image_id = "${var.amis}"
   instance_type = "t2.micro"
   security_groups = ["${aws_security_group.es_security_group.id}"]
   lifecycle {
@@ -29,20 +34,15 @@ resource "aws_autoscaling_group" "es_asg_cluster" {
   max_size = 3
 }
 
-# VPC configuration
-resource "aws_vpc" "es_vpc" {
-    cidr_block = "${var.vpc_cidr}"
-    enable_dns_hostnames = true
-}
 # Security group configuration with rule
 resource "aws_security_group" "es_security_group" {
   name = "es_security_group"
+  vpc_id = "${aws_vpc.es_vpc.id}"
   ingress {
     from_port = "${var.server_port}"
     to_port = "${var.server_port}"
     protocol = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
-    vpc_id = "${aws_vpc.es_vpc.id}"
   }
     lifecycle {
     create_before_destroy = true
