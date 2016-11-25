@@ -31,6 +31,7 @@ resource "aws_autoscaling_group" "es_asg_cluster" {
   vpc_zone_identifier = ["${aws_subnet.es_subnet.id}"]
   min_size = 3
   max_size = 3
+  load_balancers = ["${aws_elb.es_elb.name}"]
 }
 
 # Security group configuration with rule for the nodes.
@@ -69,4 +70,8 @@ listener {
     instance_port = "${var.server_port}"
     instance_protocol = "http"
   }
+}
+
+output "elb_dns_name" {
+  value = "${aws_elb.es_elb.dns_name}"
 }
