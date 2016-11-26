@@ -22,6 +22,7 @@ resource "aws_internet_gateway" "es_igw" {
     vpc_id = "${aws_vpc.es_vpc.id}"
 }
 
+# Configure additional route table rule for external access to the VPC.
 resource "aws_default_route_table" "es_route" {
     default_route_table_id = "${aws_vpc.es_vpc.default_route_table_id}"
     route {
@@ -29,6 +30,7 @@ resource "aws_default_route_table" "es_route" {
         gateway_id = "${aws_internet_gateway.es_igw.id}"
       }
 }
+
 # Lauch configuration to be used by the AutoScalling group.
 resource "aws_launch_configuration" "es_asg_conf" {
   image_id = "${lookup(var.amis, var.region)}"
@@ -122,6 +124,7 @@ listener {
   }
 }
 
+# Output the ELB DNS Address
 output "elb_dns_name" {
   value = "${aws_elb.es_elb.dns_name}"
 }
