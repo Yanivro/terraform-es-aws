@@ -14,7 +14,7 @@ resource "aws_vpc" "es_vpc" {
 # Subnet configuration
 resource "aws_subnet" "es_subnet" {
   vpc_id = "${aws_vpc.es_vpc.id}"
-  cidr_block = "${var.public_subnet_cidr}"
+  cidr_block = "${var.subnet_cidr}"
 }
 
 # Internet gateway for the cluster.
@@ -31,26 +31,21 @@ resource "aws_default_route_table" "es_route" {
       }
 }
 
-# Lauch configuration to be used by the AutoScalling group.
-resource "aws_launch_configuration" "es_asg_conf" {
-  image_id = "${lookup(var.amis, var.region)}"
+resource "aws_instance" "es_node" {
+  count = 3
+  private_ip = "${lookup(var.instance_ips, count.index)}"
+  ami = "${lookup(var.amis, var.region)}"
   instance_type = "t2.micro"
-  security_groups = ["${aws_security_group.es_security_group.id}"]
   key_name = "${var.key_name}"
- # associate_public_ip_address = true
-  lifecycle {
-    create_before_destroy = true
-  }
-}
-
-# Lauching the ASG with configuration - Might not be the best solution for ES but was interesting to try.
-resource "aws_autoscaling_group" "es_asg_cluster" {
-  launch_configuration = "${aws_launch_configuration.es_asg_conf.id}"
-  vpc_zone_identifier = ["${aws_subnet.es_subnet.id}"]
-  min_size = 3
-  max_size = 3
-  load_balancers = ["${aws_elb.es_elb.name}"]
-  health_check_type = "ELB"
+  vpc_security_group_ids = [
+    "${aws_security_group.es_security_group.id}"]
+  subnet_id = "${aws_subnet.es_subnet.id}"
+  # associate_public_ip_address = true
+   user_data = <<-EOF
+              #!/bin/bash
+              echo -e '\ndiscovery.zen.ping.multicast.enabled: false\ndiscovery.zen.ping.unicast.hosts: [\"${var.instance_ips[0]}\", \"${var.instance_ips[1]}\", \"${var.instance_ips[2]}\"]' | sudo tee -a /opt/bitnami/elasticsearch/config/elasticsearch.yml
+              sudo /opt/bitnami/ctlscript.sh restart elasticsearch &
+              EOF
 }
 
 # Security group configuration with rule for the nodes.
@@ -70,20 +65,18 @@ resource "aws_security_group" "es_security_group" {
     protocol = "tcp"
     cidr_blocks = ["${var.cdir_restrict}"]
   }
+  # Rule for free communnicating within the subnet
   ingress {
-    from_port = 80
-    to_port = 80
-    protocol = "tcp"
-    cidr_blocks = ["${var.cdir_restrict}"]
+    from_port = 0
+    to_port = 0
+    protocol = -1
+    cidr_blocks = ["${var.subnet_cidr}"]
   }
   egress {
     from_port = 0
     to_port = 0
     protocol = -1
     cidr_blocks = ["${var.cdir_restrict}"]
-  }
-    lifecycle {
-    create_before_destroy = true
   }
 }
 
@@ -110,6 +103,7 @@ resource "aws_elb" "es_elb" {
   name = "es-elb"
   security_groups = ["${aws_security_group.elb_security_group.id}"]
   subnets = ["${aws_subnet.es_subnet.id}"]
+  instances = ["${aws_instance.es_node.*.id}"]
 listener {
     lb_port =  "${var.server_port}"
     lb_protocol = "tcp"
