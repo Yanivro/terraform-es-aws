@@ -21,14 +21,18 @@ variable "vpc_cidr" {
   default     = "10.128.0.0/16"
 }
 
-variable "public_subnet_cidr" {
+variable "subnet_cidr" {
   description = "CIDR for public subnet"
   default     = "10.128.0.0/24"
 }
 
-variable "private_subnet_cidr" {
-  description = "CIDR for private subnet"
-  default     = "10.128.1.0/24"
+variable "instance_ips" {
+  type = "map"
+  default = {
+    "0" = "10.128.0.5"
+    "1" = "10.128.0.6"
+    "2" = "10.128.0.7"
+  }
 }
 
 variable "server_port" {
