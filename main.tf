@@ -43,7 +43,7 @@ resource "aws_launch_configuration" "es_asg_conf" {
   }
 }
 
-# Lauching the ASG with configuration - Might be the best solution for ES but was interesting to try.
+# Lauching the ASG with configuration - Might not be the best solution for ES but was interesting to try.
 resource "aws_autoscaling_group" "es_asg_cluster" {
   launch_configuration = "${aws_launch_configuration.es_asg_conf.id}"
   vpc_zone_identifier = ["${aws_subnet.es_subnet.id}"]
@@ -61,7 +61,8 @@ resource "aws_security_group" "es_security_group" {
     from_port = "${var.server_port}"
     to_port = "${var.server_port}"
     protocol = "tcp"
-    cidr_blocks = ["${var.cdir_restrict}"]
+   # cidr_blocks = ["${var.cdir_restrict}"]
+    security_groups = ["${aws_security_group.elb_security_group.id}"]
   }
   ingress {
     from_port = 22
@@ -104,7 +105,7 @@ resource "aws_security_group" "elb_security_group" {
   }
 }
 
-# configure Elastic Load Balancer(ELB)
+# Configure Elastic Load Balancer(ELB)
 resource "aws_elb" "es_elb" {
   name = "es-elb"
   security_groups = ["${aws_security_group.elb_security_group.id}"]
