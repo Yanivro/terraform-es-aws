@@ -9,8 +9,8 @@
 
 
 **This will create(using Terraform):**
-  * An Autoscalling Group(ASG) with 3 nodes that have the elasticsearch aws image on them.
-  * A VPC to house the ASG with a dedicated subnet and route table.
+  * 3 nodes that have the elasticsearch aws image on them.
+  * A VPC to house the nodes with a dedicated subnet and route table.
   * A Security Group that will allow tcp connections on the port specified.
-  * An Elastic Load Balancer(ELB) to load-balance the ASG.
+  * An Elastic Load Balancer(ELB) to load-balance the nodes.
 
