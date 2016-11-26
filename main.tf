@@ -40,7 +40,6 @@ resource "aws_instance" "es_node" {
   key_name = "${var.key_name}"
   vpc_security_group_ids = ["${aws_security_group.es_security_group.id}"]
   subnet_id = "${aws_subnet.es_subnet.id}"
-  associate_public_ip_address = true
   user_data = "${data.template_file.user_data_file.rendered}"
 }
 
@@ -54,12 +53,6 @@ resource "aws_security_group" "es_security_group" {
     protocol = "tcp"
    # cidr_blocks = ["${var.cdir_restrict}"]
     security_groups = ["${aws_security_group.elb_security_group.id}"]
-  }
-  ingress {
-    from_port = 22
-    to_port = 22
-    protocol = "tcp"
-    cidr_blocks = ["${var.cdir_restrict}"]
   }
   # Rule for free communnicating within the subnet
   ingress {
