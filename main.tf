@@ -115,12 +115,12 @@ listener {
   }
 }
 
-# Output the ELB DNS Address
+# Output the ELB DNS Address.
 output "elb_dns_name" {
   value = "${aws_elb.es_elb.dns_name}"
 }
 
-
+# Create a user data template file.
 data "template_file" "user_data_file" {
     template  = "${file("user_data.txt")}"
     vars {
