@@ -124,8 +124,8 @@ output "elb_dns_name" {
 data "template_file" "user_data_file" {
     template  = "${file("user_data.txt")}"
     vars {
-        vip1 = "${var.instance_ips[0]}"
-        vip2 = "${var.instance_ips[1]}"
-		vip3 = "${var.instance_ips[2]}"
+      vip1 = "${var.instance_ips[0]}"
+      vip2 = "${var.instance_ips[1]}"
+      vip3 = "${var.instance_ips[2]}"
     }
 }
