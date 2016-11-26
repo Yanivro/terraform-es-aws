@@ -36,19 +36,28 @@ variable "server_port" {
   default     = "9200"
 }
 
-/* ES AMIs for each region - according to - https://bitnami.com/stack/elasticsearch/cloud/aws */
+variable "cdir_restrict" {
+  description = "cdir block for IP restrcition access"
+  default     = "0.0.0.0/0"
+}
+
+/* ES AMIs for each region from the AWS Marketplace
+ (You must accept the terms and conditions in the marketplace ONCE in order to launch this images)*/
 variable "amis" {
   description = "Base AMI to launch the instances with"
   type = "map"
   default = {
-    us-west-1 = "ami-c2105aa2"
-    us-east-1 = "ami-85346e92"
-    us-west-2 = "ami-2352f443"
-    eu-central-1 = "ami-29a95246"
-    ap-southeast-1 = "ami-4a0aab29"
-    ap-southeast-2 = "ami-1b427e78"
-    ap-northeast-1 = "ami-b83b99d9"
-    ap-northeast-2 = "ami-a039edce"
-    sa-east-1 = "ami-7a53cf16"
+    us-east-1 = "ami-18257d0f"
+    us-east-2 = "ami-b02379d5"
+    us-west-1 = "ami-bdeda6dd"
+    us-west-2 = "ami-57d77137"
+    eu-central-1 = "ami-5c5ba333"
+    eu-west-1 = "ami-bbade6c8"
+    ap-south-1 = "ami-19b7c376"
+    ap-southeast-1 = "ami-2859f84b"
+    ap-southeast-2 = "ami-f0724e93"
+    ap-northeast-1 = "ami-051bb864"
+    ap-northeast-2 = "ami-643ce80a"
+    sa-east-1 = "ami-e9bf2385"
   }
 }
