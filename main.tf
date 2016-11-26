@@ -27,6 +27,7 @@ resource "aws_launch_configuration" "es_asg_conf" {
   image_id = "${lookup(var.amis, var.region)}"
   instance_type = "t2.micro"
   security_groups = ["${aws_security_group.es_security_group.id}"]
+  key_name = "${var.key_name}"
   lifecycle {
     create_before_destroy = true
   }
@@ -62,15 +63,15 @@ resource "aws_security_group" "elb_security_group" {
   name = "elb_security_group"
   vpc_id = "${aws_vpc.es_vpc.id}"
   ingress {
-    from_port ="${var.server_port}"
-    to_port = "${var.server_port}"
-    protocol = "tcp"
+    from_port = 0
+    to_port = 0
+    protocol = -1
     cidr_blocks = ["0.0.0.0/0"]
   }
   egress {
     from_port = 0
     to_port = 0
-    protocol = "-1"
+    protocol = -1
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
@@ -81,9 +82,9 @@ resource "aws_elb" "es_elb" {
   security_groups = ["${aws_security_group.elb_security_group.id}"]
   subnets = ["${aws_subnet.es_subnet.id}"]
 listener {
-    lb_port = "${var.server_port}"
+    lb_port =  22
     lb_protocol = "http"
-    instance_port = "${var.server_port}"
+    instance_port = 22
     instance_protocol = "http"
   }
   health_check {

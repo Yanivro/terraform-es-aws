@@ -11,6 +11,11 @@ variable "region" {
   default     = "eu-central-1"
 }
 
+variable "key_name" {
+  description = "The key pair name to use for the nodes"
+  default     = "es_key"
+}
+
 variable "vpc_cidr" {
   description = "CIDR for VPC"
   default     = "10.128.0.0/16"
