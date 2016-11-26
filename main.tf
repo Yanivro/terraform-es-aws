@@ -31,17 +31,17 @@ resource "aws_default_route_table" "es_route" {
       }
 }
 
+# Create 3 ES Nodes
 resource "aws_instance" "es_node" {
   count = 3
   private_ip = "${lookup(var.instance_ips, count.index)}"
   ami = "${lookup(var.amis, var.region)}"
-  instance_type = "t2.micro"
+  instance_type = "t2.medium"
   key_name = "${var.key_name}"
-  vpc_security_group_ids = [
-    "${aws_security_group.es_security_group.id}"]
+  vpc_security_group_ids = ["${aws_security_group.es_security_group.id}"]
   subnet_id = "${aws_subnet.es_subnet.id}"
   associate_public_ip_address = true
-  user_data = "${template_file.user_data_file.rendered}"
+  user_data = "${data.template_file.user_data_file.rendered}"
 }
 
 # Security group configuration with rule for the nodes.
@@ -121,7 +121,7 @@ output "elb_dns_name" {
 }
 
 
-resource "template_file" "user_data_file" {
+data "template_file" "user_data_file" {
     template  = "${file("user_data.txt")}"
     vars {
         vip1 = "${var.instance_ips[0]}"
