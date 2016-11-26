@@ -40,12 +40,8 @@ resource "aws_instance" "es_node" {
   vpc_security_group_ids = [
     "${aws_security_group.es_security_group.id}"]
   subnet_id = "${aws_subnet.es_subnet.id}"
-  # associate_public_ip_address = true
-   user_data = <<-EOF
-              #!/bin/bash
-              echo -e '\ndiscovery.zen.ping.multicast.enabled: false\ndiscovery.zen.ping.unicast.hosts: [\"${var.instance_ips[0]}\", \"${var.instance_ips[1]}\", \"${var.instance_ips[2]}\"]' | sudo tee -a /opt/bitnami/elasticsearch/config/elasticsearch.yml
-              sudo /opt/bitnami/ctlscript.sh restart elasticsearch &
-              EOF
+  associate_public_ip_address = true
+  user_data = "${template_file.user_data_file.rendered}"
 }
 
 # Security group configuration with rule for the nodes.
@@ -122,4 +118,14 @@ listener {
 # Output the ELB DNS Address
 output "elb_dns_name" {
   value = "${aws_elb.es_elb.dns_name}"
+}
+
+
+resource "template_file" "user_data_file" {
+    template  = "${file("user_data.txt")}"
+    vars {
+        vip1 = "${var.instance_ips[0]}"
+        vip2 = "${var.instance_ips[1]}"
+		vip3 = "${var.instance_ips[2]}"
+    }
 }
